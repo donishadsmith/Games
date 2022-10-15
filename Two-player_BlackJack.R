@@ -253,7 +253,7 @@ two_player_blackjack = function(){
   #Output scoreboard at the end of each game
   score_tracker= function(information){
     if(information[2] == "win"){
-      if(information[1] == "1"){
+      if(information[1] == 1){
         player_1$win <<- player_1$win + 1
         player_2$loss <<- player_2$loss + 1
       }
@@ -263,7 +263,7 @@ two_player_blackjack = function(){
       }
     }
     else if(information[2] == "loss"){
-      if(information[1] == "1"){
+      if(information[1] == 1){
         player_1$loss <<- player_1$loss + 1
         player_2$win <<- player_2$win + 1
       }
@@ -324,16 +324,9 @@ two_player_blackjack = function(){
       #If player's hand exceeds 21. Player loses.
       if(current_player$hand_value > 21){
         print("",quote = F)
-        prompt = paste("Bust! Player" , current_player$player, "loses!")
-        print(prompt,quote = F)
-        #Code here is a bit convoluted but it was the simplest solution for me to come up with. 
-        #As mentioned before, strsplit allows each character in the prompt to become its own string
-        #strsplit creates a recursive list (list in a list) so unlist is used to flatten the list
-        prompt  = unlist(strsplit(prompt, NULL))
+        print(paste("Bust! Player" , current_player$player, "loses!"), quote=F)
         #A way to provide the necessary information to the score_tracker function.
-        #prompt[which(prompt %in% c(1,2))] determines if 1 or 2 is in prompt and selects the postion, the output is 1 or 2
-        information = prompt[which(prompt %in% c(1,2))]
-        information = c(information, "loss")
+        information = c(current_player$player, "loss")
         score_tracker(information)
         try_again()
       }
@@ -353,11 +346,8 @@ two_player_blackjack = function(){
         else if(iteration == 1){
           if(current_player$hand_value == 21 & !(other_player$hand_value == 21)){
             print("",quote = F)
-            prompt = paste("Player", current_player$player, "got to 21. Player" ,current_player$player, "wins!")
-            print(prompt,quote = F)
-            prompt  = unlist(strsplit(prompt, ""))[1:8] 
-            information = prompt[which(prompt %in% c(1,2))]
-            information = c(information, "win")
+            print(paste("Player", current_player$player, "got to 21. Player" ,current_player$player, "wins!"), quote=F)
+            information = c(current_player$player, "win")
             score_tracker(information)
             try_again()
             }
@@ -391,25 +381,15 @@ two_player_blackjack = function(){
    else{
       if(current_player$hand_value > other_player$hand_value){
         print("",quote = F)
-        prompt = paste("Player",  current_player$player, "is closer to 21. Player" , current_player$player, "wins!")
-        print(prompt,quote = F)
-        #[1:8] is added because each letter and number becomes a string, so "2" "1". Also, both players are referenced in this prompt 
-        #Consequently, prompt[which(prompt %in% c(1,2))] does not work because the numbers in this prompt isn't exclusive to a single player 
-        # and both players are referenced. The first 8 letters only includes the winning player and excludes everything else.
-        #This can be fixed by turning 21 to twenty-one but it doesn't look as pretty
-        prompt  = unlist(strsplit(prompt, ""))[1:8] 
-        information = prompt[which(prompt %in% c(1,2))]
-        information = c(information, "win")
+        print(paste("Player",  current_player$player, "is closer to 21. Player" , current_player$player, "wins!"), quote=F)
+        information = c(current_player$player, "win")
         score_tracker(information)
         try_again()
       }
       else if(current_player$hand_value < other_player$hand_value){
         print("",quote = F)
-        prompt = paste("Player", other_player$player, "is closer to 21. Player" ,other_player$player, "wins!")
-        print(prompt,quote = F)
-        prompt  = unlist(strsplit(prompt, ""))[1:8] 
-        information = prompt[which(prompt %in% c(1,2))]
-        information = c(information, "win")
+        print(paste("Player", other_player$player, "is closer to 21. Player" ,other_player$player, "wins!"), quote=F)
+        information = c(other_player$player, "win")
         score_tracker(information)
         try_again()
       }
