@@ -33,7 +33,7 @@ two_player_blackjack = function(){
   #The assignment operator for local assignment is <- or = . Global assignment allows a variable in R's global environment to be modified 
   # For instance, if I have a variable x = 1 outside a function and inside a function, I have x = x + 1 or x = 2, there will be an error
   #This is because x is not created within the function and x = x + 1 implies that there is a local variable named x
-  #If I do, x <<- x + 1 instead or x <<- 2, the global x variable noe equals 2
+  #If I do, x <<- x + 1 instead or x <<- 2, the global x variable now equals 2
   casino_functions = setRefClass('casino', fields = list(hand = "character", hand_value = "numeric",
                                                          position = "numeric", initial_hand = "character",
                                                          unlisted_hand = "character", win = "numeric", loss = "numeric", 
@@ -235,7 +235,7 @@ two_player_blackjack = function(){
       #hit or stnad. During this period,player_2$hand_value still reflects the value of the hidden hand (0 + the value of the second card)
       #player_2$sum_cards(player_2$hand) is used to update the value of the hand to reflect the actual value 
       # I can't use player_2$random_cards_generator() because that code draws a card and sums the value. 
-      #New cards shouldn't be selected unless the player says so.
+      #New cards shouldn't be selected unless the player wants to.
       print(paste("Player 2's sum:",player_2$sum_cards(player_2$hand)),quote = F)
     }
     print("",quote = F)
@@ -327,9 +327,11 @@ two_player_blackjack = function(){
         prompt = paste("Bust! Player" , current_player$player, "loses!")
         print(prompt,quote = F)
         #Code here is a bit convoluted but it was the simplest solution for me to come up with. 
-        #strsplit allows each character in the prompt to become its own string
-        
+        #As mentioned before, strsplit allows each character in the prompt to become its own string
+        #strsplit creates a recursive list (list in a list) so unlist is used to flatten the list
         prompt  = unlist(strsplit(prompt, NULL))
+        #A way to provide the necessary information to the score_tracker function.
+        #prompt[which(prompt %in% c(1,2))] determines if 1 or 2 is in prompt and selects the postion, the output is 1 or 2
         information = prompt[which(prompt %in% c(1,2))]
         information = c(information, "loss")
         score_tracker(information)
@@ -435,6 +437,10 @@ two_player_blackjack = function(){
   }
   game()
 }
+# This entire game is a function. So, the entire function and sub-functions are created first. The outermost fucntions needs to be called to start the game.
+#The second outermost function is game(), which creates the deck and the global iteration variable and calls player_randomiser(), the third outermost function is player_randomiser() to randomize
+#players and call output() and player_function(), player_function() is the fourth outermost function that actually contains the blackjack game and calls the output() function
+#to show the game_status, score_tracker() to keep track of scores, and try_again to replay to game. 
 two_player_blackjack()
 
 
