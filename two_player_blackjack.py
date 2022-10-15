@@ -23,7 +23,7 @@ def two_player_blackjack():
             else:
                 hand = self.hand
             for card in hand:
-                if card == "A":
+                if card[0] == "A":
                     if(self.hand_value + 11 > 21):
                         self.hand_value += 1
                     else:
