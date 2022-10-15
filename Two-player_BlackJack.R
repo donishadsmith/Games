@@ -140,19 +140,28 @@ two_player_blackjack = function(){
                                    } ))
   #See if previous score files exists to continue previous streaks. The try_again function lets players save the scoreboard as a text file if they want to 
   if(file.exists("player_scores_for_two_player_blackjack_in_R.txt")){
-    scores <<- read.csv("player_scores_for_two_player_blackjack_in_R.txt", header = T, row.names =1 )
-    player_1 <<- casino_functions(win = scores["player_1", "win"], loss = scores["player_1", "loss"])
-    player_2 <<-  casino_functions(win = scores["player_2", "win"], loss = scores["player_2", "loss"])
-    game_iteration <<- scores[1,"game_iteration"]
+    print("A save file of the previous session has been found", quote=F)
+    choice = readline("Would you like to continue the previous session or begin a new game session? 'Yes[y]' or 'No[n].")
+    choice = tolower(as.character(choice))
+    while(!(choice %in% valid_options[5:8])){
+      choice = readline(paste(paste0("'",choice, "'"), "A save file of the previous session has been found. \nWould you like to continue the previous session or begin a new game session? 'Yes[y]' or 'No[n]'."))
+      choice = tolower(as.character(choice))
+    }
+    if(choice == "yes" | choice == "y"){
+      scores <<- read.csv("player_scores_for_two_player_blackjack_in_R.txt", header = T, row.names =1 )
+      player_1 <<- casino_functions(win = scores["player_1", "win"], loss = scores["player_1", "loss"])
+      player_2 <<-  casino_functions(win = scores["player_2", "win"], loss = scores["player_2", "loss"])
+     game_iteration <<- scores[1,"game_iteration"]
+    }
+    else{
+      player_1 = casino_functions(win = 0, loss = 0)
+      player_2 = casino_functions(win = 0, loss = 0)
+  }
   }
   #If they don't want to continue the streak or the text file doesn't exist, then win and loss is assigned 0.
   #Will possibly add a part that ask players if they want to continue their previous streak instead of automatically using the previous scoreboard
   #Possibly, a player may want to save a previous streak but want to play a new game with another competitor 
-  #I should probably allow for players to change file names in game
-  else{
-    player_1 = casino_functions(win = 0, loss = 0)
-    player_2 = casino_functions(win = 0, loss = 0)
-  }
+  #Need to input code so that players can select specific files.
   player_1$player = 1
   player_2$player = 2
   #Function to randomize player, players choose which player they want to be, when resetting, a new player will be selected to go first.
