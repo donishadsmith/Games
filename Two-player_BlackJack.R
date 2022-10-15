@@ -14,6 +14,8 @@ two_player_blackjack = function(){
   print("",quote = F)
   # valid_options is a variable that contains all the input options relevant to this game. This is what players will be able to input in the console.
   valid_options = c("hit", "stand", "h", "s", 'yes', 'no', 'y', 'n')
+  #Keep track of number of games played
+  game_iteration <<- 0
   #casino_functions is an R class that contains attributes (variables in the class) and methods (functions in the class). Classes allows one to assign methods and objects to a new variable.
   # This is significant because I can create two objects/instances "player_1" and "player_2" that can store its own information regarding the cards in the players hand, their value, etc.
   #fields are all the objects that this class contains and methods are the functions available in this class
@@ -139,9 +141,9 @@ two_player_blackjack = function(){
   #See if previous score files exists to continue previous streaks. The try_again function lets players save the scoreboard as a text file if they want to 
   if(file.exists("player_scores_for_two_player_blackjack_in_R.txt")){
     scores <<- read.csv("player_scores_for_two_player_blackjack_in_R.txt", header = T, row.names =1 )
-    player_1 = casino_functions(win = scores["player_1", "win"], loss = scores["player_1", "loss"])
-    player_2 = casino_functions(win = scores["player_2", "win"], loss = scores["player_2", "loss"])
-    
+    player_1 <<- casino_functions(win = scores["player_1", "win"], loss = scores["player_1", "loss"])
+    player_2 <<-  casino_functions(win = scores["player_2", "win"], loss = scores["player_2", "loss"])
+    game_iteration <<- scores[1,"game_iteration"]
   }
   #If they don't want to continue the streak or the text file doesn't exist, then win and loss is assigned 0.
   #Will possibly add a part that ask players if they want to continue their previous streak instead of automatically using the previous scoreboard
@@ -209,7 +211,7 @@ two_player_blackjack = function(){
         }
         if(choice == "yes" || choice == "y"){
           #Let player choose to save current game states in text file
-          scores <<- data.frame(win = c(player_1$win, player_2$win),loss = c(player_1$loss, player_2$loss), row.names = c("player_1", "player_2"))
+          scores <<- data.frame(win = c(player_1$win, player_2$win),loss = c(player_1$loss, player_2$loss), game_iteration = c(game_iteration, NA), row.names = c("player_1", "player_2"))
           write.csv(scores, file = "player_scores_for_two_player_blackjack_in_R.txt")
           print("The text file has been saved in the current working directory",quote = F)
         }
@@ -272,10 +274,13 @@ two_player_blackjack = function(){
         player_1$win <<- player_1$win + 1
       }
     }
+    game_iteration <<- game_iteration + 1
     print("______________________________",quote = F)
     print("",quote = F)
     print("Current scoreboard:",quote = F)
     print("______________________________",quote = F)
+    print(paste("Total number of games played:",game_iteration),quote = F)
+    print("",quote = F)
     print(paste("Player 1 wins:",  player_1$win),quote = F)
     print(paste("Player 1 losses:", player_1$loss),quote = F)
     print("",quote = F)
@@ -304,7 +309,7 @@ two_player_blackjack = function(){
         #Now, the players are switched
         player_function(other_player, current_player)
       }
-      }
+    }
     
     player_choice = readline("Hit(h) or stand(s)? ")
     player_choice = tolower(as.character(player_choice))
@@ -340,23 +345,23 @@ two_player_blackjack = function(){
           player_function(other_player, current_player)
         }
       }
-        #Automatically assess win, loss, and tie if iteration is 1 and both 
-        #I could have used else if(iteration == 1 & current_player$hand_value == 21) instead. 
-        #That would have allowed me to exclude the second else if and just use else. The code does the same thing and it doesn't cause major performance issues
-        else if(iteration == 1){
-          if(current_player$hand_value == 21 & !(other_player$hand_value == 21)){
-            print("",quote = F)
-            print(paste("Player", current_player$player, "got to 21. Player" ,current_player$player, "wins!"), quote=F)
-            information = c(current_player$player, "win")
-            score_tracker(information)
-            try_again()
-            }
-          else if(current_player$hand_value == 21 & other_player$hand_value == 21){
-            print("",quote = F)
-            print("Tie!",quote = F)
-            try_again()
-            }
+      #Automatically assess win, loss, and tie if iteration is 1 and both 
+      #I could have used else if(iteration == 1 & current_player$hand_value == 21) instead. 
+      #That would have allowed me to exclude the second else if and just use else. The code does the same thing and it doesn't cause major performance issues
+      else if(iteration == 1){
+        if(current_player$hand_value == 21 & !(other_player$hand_value == 21)){
+          print("",quote = F)
+          print(paste("Player", current_player$player, "got to 21. Player" ,current_player$player, "wins!"), quote=F)
+          information = c(current_player$player, "win")
+          score_tracker(information)
+          try_again()
         }
+        else if(current_player$hand_value == 21 & other_player$hand_value == 21){
+          print("",quote = F)
+          print("Tie!",quote = F)
+          try_again()
+        }
+      }
       player_choice = readline("Hit(h) or stand(s)? ")
       player_choice = tolower(as.character(player_choice))
       while(!(player_choice %in% valid_options[1:4])){
@@ -376,9 +381,9 @@ two_player_blackjack = function(){
       output()
       player_function(other_player, current_player)
     }
-   #If the previous block isn't met, the proceeding else statement is activated. So, when the player the goes second hit stand, the game evaluates
+    #If the previous block isn't met, the proceeding else statement is activated. So, when the player the goes second hit stand, the game evaluates
     #both players hand and begins assigning wins and losses
-   else{
+    else{
       if(current_player$hand_value > other_player$hand_value){
         print("",quote = F)
         print(paste("Player",  current_player$player, "is closer to 21. Player" , current_player$player, "wins!"), quote=F)
@@ -398,7 +403,7 @@ two_player_blackjack = function(){
         print("Tie!",quote = F)
         try_again()
       }
-   }
+    }
   }
   #Actual blackjack game
   game = function(){
