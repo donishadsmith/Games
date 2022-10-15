@@ -1,3 +1,4 @@
+#Two-player blackjack in Python. Still trying to refine the code but it is functional
 from random import sample
 import sys
 import numpy as np
@@ -37,11 +38,11 @@ def two_player_blackjack():
                 else:
                     self.hand_value += int(card[0])
             return self.hand_value
-        #@classmethod
+
         def hidden_hand(self):
             self.initial_hand = list(self.hand)
             self.initial_hand[0] = '_'
-        #@classmethod
+
         def card_selector(self):
             global deck
             deck = sample(deck,len(deck))
