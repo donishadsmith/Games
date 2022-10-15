@@ -94,7 +94,15 @@ two_player_blackjack = function(){
                                      #for function to count each card in the hand
                                      for(card in hand){
                                        #split each character in a string "1♦" becomes "1" "♦", the first position will always be a number
-                                       #strsplit allows the 
+                                       #strsplit allows each character (in this case, the number and sumbol) to become its own string. 
+                                       #strsplit always ask for a mode output type. NULL is used so that strsplit assigns string as character/the appropriate mode
+                                       #Even though, strsplit splits each character into its own string, the output is a list of length one
+                                       #thus, unlist in order to return a vector with the approriate length
+                                       #For instance, if x ="THE", strisplit wil split "THE" into "T" "H" "E"
+                                       #length of x will = 1. This is because strisplit turns x into a recursive list, a list within a list.
+                                       #So, is I need to select "T" in x, I need to do it by x[[1]][1]
+                                       #[[1]][1] is saying "select position 1 in the second layer of the list, then in that specific sublist, select the first position"
+                                       #To avoid that, unlist is used, I can use x[1] to call "T"
                                        unlisted_hand <<- unlist(strsplit(card, NULL))
                                        if(unlisted_hand[1] == "A"){
                                          if(total_sum + 11 > 21){
@@ -144,11 +152,13 @@ two_player_blackjack = function(){
       print("______________________________",quote = F)
       print("Player 1 goes first.",quote = F)
       print("______________________________",quote = F)
-      #Assi
+      #Assigning positions so that random_card_generator knows which player needs to have their first card hidden
       player_1$position = 1
       player_2$position = 2
+      #Calling the first two cards for each player
       player_1$random_cards_generator()
       player_2$random_cards_generator()
+      #output is another fucntion that keeps track of the current status of the game
       output()
       player_function(player_1, player_2)
       
@@ -168,11 +178,15 @@ two_player_blackjack = function(){
   #Function to try again. If player says yes, the game gets repeated
   try_again = function(){
     #readline allows for input in the R console. Player does not need to input their response into the function itself
-    #Typically, a funciton needs an input when activated single-deck
-    choice =  noquote(readline("Would you like to play again? Please choose 'Yes(y)' or 'No(n)'. "))
+    choice =  readline("Would you like to play again? Please choose 'Yes(y)' or 'No(n)'. ")
+    #This part makes sure that the mode of the input is a character and makes everything lower case. So if player puts in "YES", "YeS", or any configuration
+    #It will be in lowercase and recognized as long as it is spelled correctly
     choice = tolower(as.character(choice))
     while(!(choice %in% valid_options[5:8])){
-      choice = readline(paste(choice, "is not a valid option. Please choose 'Yes(y)' or 'No(n)'. "))
+      #paste is a function that literally paste strings together. So, this code repeats the players input.
+      #If player inputs "ye" it will read "'ye' is not a valid option. Please choose 'Yes(y)' or 'No(n)'."
+      #paste0 creates the 'ye' part in single quotes. paste0 creates zero spaces between characters while paste allows for spaces
+      choice = readline(paste(paste0("'",choice,"'"), "is not a valid option. Please choose 'Yes(y)' or 'No(n)'. "))
       choice = tolower(as.character(choice))
     }
     if(choice %in% valid_options[5:8]){
@@ -180,12 +194,13 @@ two_player_blackjack = function(){
         game()
       }
       else if(choice == "no"|| choice == "n"){
-        choice = tolower(noquote(readline("Would you like the current scoreboard to be saved as a text file to continue streaks for the next game? 'Yes[y]' or 'No[n]'")))
+        choice = tolower(readline("Would you like the current scoreboard to be saved as a text file to continue streaks for the next game? 'Yes[y]' or 'No[n]'"))
         while(!(choice %in% valid_options[5:8])){
-          choice =  noquote(readline(paste(choice, "is not a valid option. Please choose 'Yes(y)' or 'No(n)'. ")))
+          choice =  readline(paste(paste0("'",choice,"'"), "is not a valid option. Please choose 'Yes(y)' or 'No(n)'. "))
           choice = tolower(as.character(choice))
         }
         if(choice == "yes" || choice == "y"){
+          #Let player choose to save current game states in text file
           scores <<- data.frame(win = c(player_1$win, player_2$win),loss = c(player_1$loss, player_2$loss), row.names = c("player_1", "player_2"))
           write.csv(scores, file = "player_scores_for_two_player_blackjack_in_R.txt")
           print("The text file has been saved in the current working directory",quote = F)
@@ -218,7 +233,7 @@ two_player_blackjack = function(){
       print(paste("Player 1's sum:",player_1$sum_cards(player_1$hand)),quote = F)
     }
   }
-  #Output scoreboard
+  #Output scoreboard at the end of each game
   score_tracker= function(information){
     if(information[2] == "win"){
       if(information[1] == "1"){
