@@ -121,8 +121,9 @@ def two_player_blackjack():
             start_game()
         else:
             print("")
-            scores =pd.DataFrame(np.array([[player_1.win, player_1.loss]]),  
-            columns = ["win", "loss"], index  = ["player_1", "player_2"])
+            scores =pd.DataFrame( {"win": [player_1.win, player_2.win],
+                       "loss": [player_1.loss, player_2.loss]},
+                    index  = ["player_1", "player_2"])
             scores.to_csv("scoreboard_for_two_player_blackjack_python.txt")
             sys.exit("Thanks for playing!")
             
