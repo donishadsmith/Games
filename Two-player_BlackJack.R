@@ -144,7 +144,7 @@ two_player_blackjack = function(){
     choice = readline("Would you like to continue the previous session or begin a new game session? 'Yes[y]' or 'No[n].")
     choice = tolower(as.character(choice))
     while(!(choice %in% valid_options[5:8])){
-      choice = readline(paste(paste0("'",choice, "'"), "A save file of the previous session has been found. \nWould you like to continue the previous session or begin a new game session? 'Yes[y]' or 'No[n]'."))
+      choice = readline(paste(paste0("'",choice, "'"), "is not a valid response. 'Yes[y]' or 'No[n]'."))
       choice = tolower(as.character(choice))
     }
     if(choice == "yes" | choice == "y"){
