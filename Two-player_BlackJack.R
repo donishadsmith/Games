@@ -14,8 +14,8 @@ two_player_blackjack = function(){
   print("",quote = F)
   # valid_options is a variable that contains all the input options relevant to this game. This is what players will be able to input in the console.
   valid_options = c("hit", "stand", "h", "s", 'yes', 'no', 'y', 'n')
-  #casino_functions is an R class that contains objects (variables) and methods (functions). Classes allows one to assign methods and objects to a new variable.
-  # This is signifivant because I can create two variables "player_1" and "player_2" that can store its own information regarding the cards in the players hand, their value, etc.
+  #casino_functions is an R class that contains attributes (variables in the class) and methods (functions in the class). Classes allows one to assign methods and objects to a new variable.
+  # This is significant because I can create two objects/instances "player_1" and "player_2" that can store its own information regarding the cards in the players hand, their value, etc.
   #fields are all the objects that this class contains and methods are the functions available in this class
   #initial_hand is the same as hand. The difference is that the first card is "hidden" by replacing it with "_", which is handled in a special way in the summing function.
   #"_" equals zero but a backup hand is also needed so that the original card is retained. "_" replaces the card for the initial hand but the actual hand is always kept in the "hand" variable.
@@ -81,6 +81,7 @@ two_player_blackjack = function(){
                                      #Immediately sum hands.
                                      #Initial hand variable belongs to second player (not player_2, the player that goes second based on the randomizer)
                                      #Intitial hand is counted differently, only the value of the second card is shown
+                                     #iteration is a global variable that is assigned to 0 at the beginning of the game
                                      if(iteration == 0 & position == 2){
                                        sum_cards(initial_hand)
                                      }
@@ -220,13 +221,21 @@ two_player_blackjack = function(){
   #Output information
   output = function () {
     print(paste("Player 2's hand:"),quote = F)
-    #As mentioned before, there is a randomizer, the if statement prints the initial_hand of the player . 
+    #As mentioned before, there is a randomizer, the if statement prints the initial_hand of the player if the position for player_2 is 2
+    # and the global iteration variable = 0
     if(player_2$position == 2 & iteration == 0){
       print(player_2$initial_hand,quote = F)
       print(paste("Player 2's sum:",player_2$hand_value),quote = F)
     }
     else{
       print(player_2$hand,quote = F)
+      # Here player_2$sum_cards(player_2$hand) is used instead of player_2$hand_value
+      #In the above code, player_2$hand reveals the hidden card; however, player_2$hand_value doesn't immediatially update.
+      #In this game, when the first player stands, the game status updates to reveal the second players hand so that the second player can decide to
+      #hit or stnad. During this period,player_2$hand_value still reflects the value of the hidden hand (0 + the value of the second card)
+      #player_2$sum_cards(player_2$hand) is used to update the value of the hand to reflect the actual value 
+      # I can't use player_2$random_cards_generator() because that code draws a card and sums the value. 
+      #New cards shouldn't be selected unless the player says so.
       print(paste("Player 2's sum:",player_2$sum_cards(player_2$hand)),quote = F)
     }
     print("",quote = F)
