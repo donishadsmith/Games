@@ -28,6 +28,12 @@ two_player_blackjack = function(){
   #hand_value is just the summation of the player's hand
   #player is different from position. A player's position may change (1 or 2 based on who goes first) but the player is always the same (1 for player 1 and 2 for player 2)
   #player is used for substitution in certain prompts.
+  
+  #Note <<- is global assignment, it equals "global" in python. Local assignment allows variable modification inside a function. 
+  #The assignment operator for local assignment is <- or = . Global assignment allows a variable in R's global environment to be modified 
+  # For instance, if I have a variable x = 1 outside a function and inside a function, I have x = x + 1 or x = 2, there will be an error
+  #This is because x is not created within the function and x = x + 1 implies that there is a local variable named x
+  #If I do, x <<- x + 1 instead or x <<- 2, the global x variable noe equals 2
   casino_functions = setRefClass('casino', fields = list(hand = "character", hand_value = "numeric",
                                                          position = "numeric", initial_hand = "character",
                                                          unlisted_hand = "character", win = "numeric", loss = "numeric", 
@@ -138,7 +144,8 @@ two_player_blackjack = function(){
   }
   #If they don't want to continue the streak or the text file doesn't exist, then win and loss is assigned 0.
   #Will possibly add a part that ask players if they want to continue their previous streak instead of automatically using the previous scoreboard
-  #Possibly, a player may want to sa
+  #Possibly, a player may want to save a previous streak but want to play a new game with another competitor 
+  #I should probably allow for players to change file names in game
   else{
     player_1 = casino_functions(win = 0, loss = 0)
     player_2 = casino_functions(win = 0, loss = 0)
@@ -213,6 +220,7 @@ two_player_blackjack = function(){
   #Output information
   output = function () {
     print(paste("Player 2's hand:"),quote = F)
+    #As mentioned before, there is a randomizer, the if statement prints the initial_hand of the player . 
     if(player_2$position == 2 & iteration == 0){
       print(player_2$initial_hand,quote = F)
       print(paste("Player 2's sum:",player_2$hand_value),quote = F)
