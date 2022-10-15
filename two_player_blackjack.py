@@ -5,9 +5,6 @@ import numpy as np
 import pandas as pd
 def two_player_blackjack():
     valid_options = ['yes', 'no', 'y','n', 'hit', 'h', 'stand', 's']
-    iteration = 0
-    deck = [str(i)+symbol for i in range(2,11) for symbol in ["♦","♥","♠","✤"]]
-    add_cards = [face_card + symbol for face_card in ["J", "Q", "K", "A"] for symbol in ["♦","♥","♠","✤"]]
     class casino:
         def __init__(self, hand, hand_value, initial_hand, position, player, win, loss):
             self.hand = hand
@@ -214,9 +211,8 @@ def two_player_blackjack():
     def start_game(): 
         global deck
         global iteration
-        deck = [str(i)+symbol for i in range(2,11) for symbol in ["♦","♥","♠","✤"]]
-        add_cards = [face_card + symbol for face_card in ["J", "Q", "K", "A"] for symbol in ["♦","♥","♠","✤"]]
-        global iteration
+        cards = list(range(2,11)) + ["J", "Q", "K", "A"]
+        deck = [str(card)+symbol for card in cards for symbol in ["♦","♥","♠","✤"]]
         iteration = 0
         player_randomiser()
         
