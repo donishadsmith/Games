@@ -225,7 +225,7 @@ two_player_blackjack = function(){
           print("The text file has been saved in the current working directory",quote = F)
         }
         print("Thanks for playing! Type 'two_player_blackjack()' with no quotations in the console if you want to play again.",quote = F)
-        invokeRestart("abort")
+        break
       }
     }
   }
