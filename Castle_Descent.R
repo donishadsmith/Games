@@ -58,7 +58,6 @@ castle_descent = function(){
   #Game Board that player will see, here monsters, fairy genies, and stairs are hidden with
   #the door unicode
   game_board = castle
-  #Everything that is not an empty space, castle wall, 
   game_board[which(!(game_board %in% c("","\U2591","\U1F93A")))] = "\U1F6AA"
   noquote(game_board)
   noquote(castle)
