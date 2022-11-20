@@ -1,5 +1,5 @@
 #Objective is to get to the bottom of the castle and find the exit
-
+#Python equivalent currently being developed
 
 castle_descent = function(){
   moves = c("w", "s", "d","a",
