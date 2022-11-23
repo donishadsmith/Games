@@ -1,6 +1,4 @@
 
-#print position
-#for( letter in which(y %in% x)){print(letter)}
 guess_the_word = function() {
   #All functions belong to base R
   dictionary = data.frame(easy = c("jam", "ace", "odd", "low", "the", "get", "lit", "fin", "guy", "bud"), intermediate = c("earth", "abode", "beach", "music","jumbo",
