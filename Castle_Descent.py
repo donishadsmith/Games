@@ -1,5 +1,4 @@
-##Python version of Castle Descent it is still buggy and I am currently trying to remove sme kinks. The movement in the array works and interactions 
-#with monsters and, fairiesn and genies work. Playing in the first array works, problem arises when "descending" into the lower arrays.
+##Python version of Castle Descent. Need to clean up code for both oythin and R version
 import random, copy
 import numpy as np
 def castle_descent():
@@ -30,8 +29,84 @@ def castle_descent():
         def controller(self,player_input):
             self.movement_coordinate = tuple(movement[player_input])
             self.encountered_object = castle[self.movement_coordinate]
-
-     
+            self.events()
+            
+        def events(self):
+            if self.encountered_object == '\u2800':
+                game_board[self.player_coordinate] = '\u2800'
+                self.player_coordinate = copy.deepcopy(self.movement_coordinate)
+                game_board[self.player_coordinate] = self.player
+                print(np.array2string(game_board[self.floor], separator='   ', formatter={'str_kind': lambda x: x}))
+  
+            elif self.encountered_object=='\U0001f9da':
+                game_board[self.movement_coordinate] = copy.deepcopy(castle[self.movement_coordinate])
+                print(np.array2string(game_board[self.floor], separator='   ', formatter={'str_kind': lambda x: x}))
+                print('You encountered a fairy! Your health increases by 10 HP.')
+                self.player_health = self.player_health + 10
+                print(f'New HP: {self.player_health}')
+                numerical_board[self.movement_coordinate] = 0
+                game_board[self.movement_coordinate] = '\u2800'
+                castle[self.movement_coordinate]  = '\u2800'
+  
+            elif self.encountered_object==u'\U0001F9DE':
+                game_board[self.movement_coordinate] = copy.deepcopy(castle[self.movement_coordinate])
+                print(np.array2string(game_board[self.floor], separator='   ', formatter={'str_kind': lambda x: x}))
+                print('You encountered a genie!')
+                print('Your attack range increased by 2 points.')
+                self.player_attack_range = [num + 2 for num in self.player_attack_range]
+                print(f'New attack range: {min(self.player_attack_range)}:{max(self.player_attack_range)}')
+                numerical_board[self.movement_coordinate] = 0
+                game_board[self.movement_coordinate] = '\u2800'
+                castle[self.movement_coordinate]  = '\u2800'
+  
+            elif self.encountered_object==u'\U0001f479':
+                game_board[self.movement_coordinate] = copy.deepcopy(castle[player.movement_coordinate])
+                print(np.array2string(game_board[self.floor], separator='   ', formatter={'str_kind': lambda x: x}))
+                print('You encountered a monster!')
+                print(f'Your HP: {self.player_health}')
+                print(f'Your attack range: {min(self.player_attack_range)}:{max(self.player_attack_range)}')
+                print(f'Monster HP: {numerical_board[self.movement_coordinate][0]}')
+                player_monster_choice = str(input('Would you like to attack(a) or run(r)? ').lower())
+                while player_monster_choice not in ['attack', 'run', 'a', 'r']:
+                    player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
+                if player_monster_choice == 'attack' or player_monster_choice == 'a':
+                    print('You decided to attack')
+                    while player_monster_choice != 'run' and player_monster_choice != 'r' and numerical_board[player.movement_coordinate] > 0:
+                        print(np.array2string(game_board[self.floor], separator='   ', formatter={'str_kind': lambda x: x}))
+                        self.attack_power = random.sample(self.player_attack_range, 1)[0]
+                        print(f'You dealt {self.attack_power} points of damage.')
+                        numerical_board[self.movement_coordinate] = numerical_board[self.movement_coordinate] - player.attack_power
+                        if numerical_board[self.movement_coordinate] <= 0:
+                            print('The monster fainted. You won!')
+                            numerical_board[self.movement_coordinate] = 0
+                            game_board[self.movement_coordinate] = '\u2800'
+                            castle[self.movement_coordinate]  = '\u2800'
+                        else:
+                            print(f'Monster HP: {numerical_board[self.movement_coordinate][0]}')
+                            monster_attack = random.sample([num for num in range(1,6)], 1)[0]
+                            print(f'Monster dealt {monster_attack} points of damage.')
+                            self.player_health = self.player_health - monster_attack
+                            print(f'Your HP: {self.player_health}')
+                            if self.player_health <= 0:
+                                print('You died')
+                                self.try_again()
+                            else:
+                                player_monster_choice = str(input('Would you like to attack(a) or run(r)? ').lower())
+                                while player_monster_choice not in ['attack', 'run', 'a', 'r']:
+                                    player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
+                else:
+                    print('You decided to run.')
+        
+            elif self.encountered_object=="S":
+                self.floor = self.floor + 1
+                #Will be creating better stairs logic
+                print(f'You found the stars! You can now advance to floor {self.floor}!')
+                game_board[self.movement_coordinate[0][0] + 1,self.movement_coordinate[1][0],
+                self.movement_coordinate[2][0]] = self.player
+                game_board[self.player_coordinate] = '\u2800'
+                self.player_coordinate = np.where(game_board==u'\U0001F93A')
+                print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
+  
     ###Create Castle   
     castle_area = random.sample([num for num in range(8,16, 2)],1)[0]
     castle = np.array(np.zeros([3, castle_area, castle_area]),  dtype='<U1')
@@ -137,81 +212,9 @@ def castle_descent():
         
         player.controller(player_input)
         
-        if player.encountered_object == '\u2800':
-            game_board[player.player_coordinate] = '\u2800'
-            player.player_coordinate = copy.deepcopy(player.movement_coordinate)
-            game_board[player.player_coordinate] = player.player
-            print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-  
-        elif player.encountered_object=='\U0001f9da':
-            game_board[player.movement_coordinate] = castle[player.movement_coordinate]
-            print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-            print('You encountered a fairy! Your health increases by 10 HP.')
-            player.player_health = player.player_health + 10
-            print(f'New HP: {player.player_health}')
-            numerical_board[player.movement_coordinate] = 0
-            game_board[player.movement_coordinate] = '\u2800'
-            castle[player.movement_coordinate]  = '\u2800'
-  
-        elif player.encountered_object==u'\U0001F9DE':
-            game_board[player.movement_coordinate] = castle[player.movement_coordinate]
-            print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-            print('You encountered a genie!')
-            print('Your attack range increased by 2 points.')
-            player.player_attack_range = [num + 2 for num in player.player_attack_range]
-            print(f'New attack range: {min(player.player_attack_range)}:{max(player.player_attack_range)}')
-            numerical_board[player.movement_coordinate] = 0
-            game_board[player.movement_coordinate] = '\u2800'
-            castle[player.movement_coordinate]  = '\u2800'
-  
-        elif player.encountered_object==u'\U0001f479':
-            game_board[player.movement_coordinate] = castle[player.movement_coordinate]
-            print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-            print('You encountered a monster!')
-            print(f'Your HP: {player.player_health}')
-            print(f'Your attack range: {min(player.player_attack_range)}:{max(player.player_attack_range)}')
-            print(f'Monster HP: {numerical_board[player.movement_coordinate][0]}')
-            player_monster_choice = str(input('Would you like to attack(a) or run(r)? ').lower())
-            while player_monster_choice not in ['attack', 'run', 'a', 'r']:
-                player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
-            if player_monster_choice == 'attack' or player_monster_choice == 'a':
-                print('You decided to attack')
-                while player_monster_choice != 'run' and player_monster_choice != 'r' and numerical_board[player.movement_coordinate] > 0:
-                    print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-                    player.attack_power = random.sample(player.player_attack_range, 1)[0]
-                    print(f'You dealt {player.attack_power} points of damage.')
-                    numerical_board[player.movement_coordinate] = numerical_board[player.movement_coordinate] - player.attack_power
-                    if numerical_board[player.movement_coordinate] <= 0:
-                        print('The monster fainted. You won!')
-                        #numerical_board[player.movement_coordinate] = 0
-                        game_board[player.movement_coordinate] = '\u2800'
-                        castle[player.movement_coordinate]  = '\u2800'
-                    else:
-                        print(f'Monster HP: {numerical_board[player.movement_coordinate][0]}')
-                        monster_attack = random.sample([num for num in range(1,6)], 1)[0]
-                        print(f'Monster dealt {monster_attack} points of damage.')
-                        player.player_health = player.player_health - monster_attack
-                        print(f'Your HP: {player.player_health}')
-                        if player.player_health <= 0:
-                            print('You died')
-                            player.try_again()
-                        else:
-                            player_monster_choice = str(input('Would you like to attack(a) or run(r)? ').lower())
-                            while player_monster_choice not in ['attack', 'run', 'a', 'r']:
-                                player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
-            else:
-                print('You decided to run.')
-        
-        elif player.encountered_object=="S":
-            player.floor = player.floor + 1
-              #Will be creating better stairs logic
-            print(f'You found the stars! You can now advance to floor {player.floor}!')
-            game_board[player.movement_coordinate[0][0] + 1,player.movement_coordinate[1][0],
-            player.movement_coordinate[2][0]] = player.player
-            player.player_coordinate = np.where(game_board==u'\U0001F93A')
-            print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-    
     game_board[player.movement_coordinate] = castle[player.movement_coordinate]
     print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-    print("You found the exit!", quote = F)
+    print("You found the exit!")
     player.try_again()
+
+castle_descent()
