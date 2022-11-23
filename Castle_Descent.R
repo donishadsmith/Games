@@ -1,5 +1,5 @@
 #Objective is to get to the bottom of the castle and find the exit
-#Python equivalent currently being developed
+#Python version in development
 
 castle_descent = function(){
   moves = c("w", "s", "d","a",
@@ -32,33 +32,34 @@ castle_descent = function(){
   castle_col = 1:sample(8:10, 1)
   #Numerical board will contain numerical information regarding monster health and 
   #binary information indicating if a fairy/genie has been used or not
-  numerical_board = castle = array("",dim = c(length(castle_row),length(castle_col),3))
+  numerical_board = castle = array( '\u2800',dim = c(length(castle_row),length(castle_col),3))
   #Spawn walls;These walls be used to ensure players don't go out of bounds in the array - basically boundary detection
   castle[1:nrow(castle),c(1,ncol(castle)),] ="\U2591"
   castle[c(1,nrow(castle)),1:ncol(castle),]="\U2591"
   #One is the top of the castle; this is where the player spawns
-  castle[,,1][sample(which(castle[,,1]==""),1)] = "\U1F93A"
+  castle[,,1][sample(which(castle[,,1]=='\u2800'),1)] = "\U1F93A"
   #Three is the bottom of the castle; this is where the exit spawns
-  castle[,,3][sample(which(castle[,,3]==""),1)] = "\U2395"
+  castle[,,3][sample(which(castle[,,3]=='\u2800'),1)] = "\U2395"
   #Spawn stairs
-  castle[,,1][sample(which(castle[,,1]==""),1)] = "S"
-  castle[,,2][sample(which(castle[,,1]==""),1)] = "S"
-  
+  castle[,,1][sample(which(castle[,,1]=='\u2800'),1)] = "S"
+  castle[,,2][sample(which(castle[,,1]=='\u2800'),1)] = "S"
+  noquote(castle)
   #Proportion of the empty spaces that will be monsters, genies, or fairies
   #Proportion of the empty spaces that will be monsters, genies, or fairies
-  monster_proportion = round(length(which(castle == ""))*0.15,0)
-  fairy_proportion = round(length(which(castle == ""))*0.025,0)
-  genie_proportion = round(length(which(castle == ""))*0.025,0)
+  monster_proportion = round(length(which(castle == '\u2800'))*0.15,0)
+  fairy_proportion = round(length(which(castle == '\u2800'))*0.025,0)
+  genie_proportion = round(length(which(castle == '\u2800'))*0.025,0)
   #Monster spawn; randomly throughout the castle
-  castle[,,1:3][sample(which(castle == ""),monster_proportion)] = "\U1F479"
+  castle[,,1:3][sample(which(castle == '\u2800'),monster_proportion)] = "\U1F479"
   #Fairy spawn
-  castle[,,1:3][sample(which(castle == ""),fairy_proportion)] = "\U1F9DA"
+  castle[,,1:3][sample(which(castle == '\u2800'),fairy_proportion)] = "\U1F9DA"
   #Genie spawn
-  castle[,,1:3][sample(which(castle == ""),genie_proportion)] = "\U1F9DE"
+  castle[,,1:3][sample(which(castle == '\u2800'),genie_proportion)] = "\U1F9DE"
   #Game Board that player will see, here monsters, fairy genies, and stairs are hidden with
   #the door unicode
   game_board = castle
-  game_board[which(!(game_board %in% c("","\U2591","\U1F93A")))] = "\U1F6AA"
+  #Everything that is not an empty space, castle wall, 
+  game_board[which(!(game_board %in% c('\u2800',"\U2591","\U1F93A")))] = "\U1F6AA"
   noquote(game_board)
   noquote(castle)
   #Adding information about monster health and fairies to the board 
@@ -84,7 +85,7 @@ castle_descent = function(){
   print("Welcome to Castle Descent!")
   print(noquote(game_board))
   print("You will be starting at the top of the castle!")
-  while(!(isTRUE(player_information$encountered_object=="\U2395")==T||isTRUE(player_information$player_health<=0)==T)){
+  while(!(isTRUE(player_information$encountered_object=="\U2395")==T)){    
     if(player_information$encountered_object=="S"){
       temp_board = game_board[,,player_information$floor]
       temp_movement_coordinate = player_information$movement_coordinate[-c(3)]
@@ -118,11 +119,11 @@ castle_descent = function(){
     #See which object is in the coordinate
     player_information$encountered_object = castle[player_information$movement_coordinate]  
     #Object commands
-    if(player_information$encountered_object=="" || player_information$encountered_object=="\U1F93A"){
+    if(player_information$encountered_object=='\u2800' || player_information$encountered_object=="\U1F93A"){
       # Add emoji to new coordinate is the object is empty
       game_board[player_information$movement_coordinate] = "\U1F93A"
       #Make previous player coordinate empty
-      game_board[player_information$player_coordinate] = ""
+      game_board[player_information$player_coordinate] = '\u2800'
       #Movement coordinate now the new player coordinate
       player_information$player_coordinate = player_information$movement_coordinate
     }
@@ -133,7 +134,7 @@ castle_descent = function(){
       player_information$player_health = player_information$player_health + 10
       print(paste("New HP:",player_information$player_health), quote = F)
       numerical_board[player_information$movement_coordinate] = 0
-      game_board[which(numerical_board==0)] = castle[which(numerical_board==0)] = ""
+      game_board[which(numerical_board==0)] = castle[which(numerical_board==0)] = '\u2800'
       #This code fixes an issue with the player temporarily being replaced with a string before inputting the next move
       game_board[player_information$player_coordinate]="\U1F93A"
     }
@@ -145,8 +146,8 @@ castle_descent = function(){
       player_information$player_attack_range = player_information$player_attack_range + 2
       print(paste("New attack range: ", paste0(min(player_information$player_attack_range),":",max(player_information$player_attack_range))), quote = F)
       numerical_board[player_information$movement_coordinate] = 0
-      game_board[which(numerical_board==0)] = ""
-      castle[which(numerical_board==0)] = ""
+      game_board[which(numerical_board==0)] = '\u2800'
+      castle[which(numerical_board==0)] = '\u2800'
       game_board[player_information$player_coordinate]="\U1F93A"
       }
     else if(player_information$encountered_object=="\U1F479"){
@@ -173,8 +174,8 @@ castle_descent = function(){
             print("Your attack range increased by 2 points.", qoute = F)
             player_information$player_attack_range = player_information$player_attack_range + 2
             print(paste("New attack range: ", paste0(min(player_information$player_attack_range),":",max(player_information$player_attack_range))), quote = F)
-            game_board[which(numerical_board==0)] = ""
-            castle[which(numerical_board==0)] = ""
+            game_board[which(numerical_board==0)] = '\u2800'
+            castle[which(numerical_board==0)] = '\u2800'
             game_board[player_information$player_coordinate]="\U1F93A"
           }
           else{
@@ -211,7 +212,7 @@ castle_descent = function(){
     }
   }
   game_board[player_information$movement_coordinate] = castle[player_information$movement_coordinate]
-  print(game_board, quote = F)
+  print(game_board[,,player_information$floor], quote = F)
   print("You found the exit!", quote = F)
   try_again()
 }
@@ -219,4 +220,6 @@ castle_descent()
 
 
 
+
+  
 
