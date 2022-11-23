@@ -1,6 +1,8 @@
 #Objective is to get to the bottom of the castle and find the exit
 #Python version in development
 #Still need to clean up R code and add more comments
+#It seems that arrays and dataframes cannot be updated globally within function. SO any changes to the array must be done in the outermost function
+#Thus, I had to work around creating functions for certain tasks
 
 castle_descent = function(){
   moves = c("w", "s", "d","a",
