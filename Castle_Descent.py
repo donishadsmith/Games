@@ -18,8 +18,8 @@ def castle_descent():
         
         def try_again(self):
             player_retry = str(input('Want to play again? Yes (y) or No (n)? ').lower())
-            while player_input not in ['yes', 'no', 'y', 'n']:
-                player_input = str(input(f"'{player_retry}' is not a valid option. Want to play again? Yes (y) or No (n)? ").lower())
+            while player_retry not in ['yes', 'no', 'y', 'n']:
+                player_retry = str(input(f"'{player_retry}' is not a valid option. Want to play again? Yes (y) or No (n)? ").lower())
             if player_retry == 'yes' or player_retry == 'y':
                 castle_descent()
             else:
