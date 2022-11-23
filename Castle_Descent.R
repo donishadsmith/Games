@@ -174,9 +174,6 @@ castle_descent = function(){
           if(as.numeric(numerical_board[player_information$movement_coordinate]) - player_information$attack_power <= 0){
             numerical_board[player_information$movement_coordinate] = 0
             print("The monster fainted. You won!",quote = F)
-            print("Your attack range increased by 2 points.", qoute = F)
-            player_information$player_attack_range = player_information$player_attack_range + 2
-            print(paste("New attack range: ", paste0(min(player_information$player_attack_range),":",max(player_information$player_attack_range))), quote = F)
             game_board[which(numerical_board==0)] = '\u2800'
             castle[which(numerical_board==0)] = '\u2800'
             game_board[player_information$player_coordinate]="\U1F93A"
@@ -222,6 +219,9 @@ castle_descent = function(){
 castle_descent()
 
 
+
+
+  
 
 
   
