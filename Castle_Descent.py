@@ -73,7 +73,7 @@ def castle_descent():
                     player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
                 if player_monster_choice == 'attack' or player_monster_choice == 'a':
                     print('You decided to attack')
-                    while player_monster_choice != 'run' and player_monster_choice != 'r' and numerical_board[player.movement_coordinate] > 0:
+                    while (player_monster_choice != 'run' and player_monster_choice != 'r') and numerical_board[player.movement_coordinate] > 0:
                         print(np.array2string(game_board[self.floor], separator='   ', formatter={'str_kind': lambda x: x}))
                         self.attack_power = random.sample(self.player_attack_range, 1)[0]
                         print(f'You dealt {self.attack_power} points of damage.')
