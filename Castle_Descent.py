@@ -1,4 +1,4 @@
-##Python version of Castle Descent. Need to clean up code for both oythin and R version
+##Python version of Castle Descent. Need to clean up code and add comments for both oythin and R version
 import random, copy
 import numpy as np
 def castle_descent():
