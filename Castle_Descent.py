@@ -1,5 +1,5 @@
 ##Python version of Castle Descent it is still buggy and I am currently trying to remove sme kinks. The movement in the array works and interactions 
-#with monsters and, fairiesn and genies work.
+#with monsters and, fairiesn and genies work. Playing in the first array works, problem arises when "descending" into the lower arrays.
 import random, copy
 import numpy as np
 def castle_descent():
@@ -176,29 +176,29 @@ def castle_descent():
                 player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
             if player_monster_choice == 'attack' or player_monster_choice == 'a':
                 print('You decided to attack')
-            while player_monster_choice != 'run' and player_monster_choice != 'r' and numerical_board[player.movement_coordinate] > 0:
-                print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
-                player.attack_power = random.sample(player.player_attack_range, 1)[0]
-                print(f'You dealt {player.attack_power} points of damage.')
-                numerical_board[player.movement_coordinate] = numerical_board[player.movement_coordinate] - player.attack_power
-                if numerical_board[player.movement_coordinate] <= 0:
-                    print('The monster fainted. You won!')
-                    #numerical_board[player.movement_coordinate] = 0
-                    game_board[player.movement_coordinate] = '\u2800'
-                    castle[player.movement_coordinate]  = '\u2800'
-                else:
-                    print(f'Monster HP: {numerical_board[player.movement_coordinate][0]}')
-                    monster_attack = random.sample([num for num in range(1,6)], 1)[0]
-                    print(f'Monster dealt {monster_attack} points of damage.')
-                    player.player_health = player.player_health - monster_attack
-                    print(f'Your HP: {player.player_health}')
-                    if player.player_health <= 0:
-                        print('You died')
-                        player.try_again()
+                while player_monster_choice != 'run' and player_monster_choice != 'r' and numerical_board[player.movement_coordinate] > 0:
+                    print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
+                    player.attack_power = random.sample(player.player_attack_range, 1)[0]
+                    print(f'You dealt {player.attack_power} points of damage.')
+                    numerical_board[player.movement_coordinate] = numerical_board[player.movement_coordinate] - player.attack_power
+                    if numerical_board[player.movement_coordinate] <= 0:
+                        print('The monster fainted. You won!')
+                        #numerical_board[player.movement_coordinate] = 0
+                        game_board[player.movement_coordinate] = '\u2800'
+                        castle[player.movement_coordinate]  = '\u2800'
                     else:
-                        player_monster_choice = str(input('Would you like to attack(a) or run(r)? ').lower())
-                        while player_monster_choice not in ['attack', 'run', 'a', 'r']:
-                            player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
+                        print(f'Monster HP: {numerical_board[player.movement_coordinate][0]}')
+                        monster_attack = random.sample([num for num in range(1,6)], 1)[0]
+                        print(f'Monster dealt {monster_attack} points of damage.')
+                        player.player_health = player.player_health - monster_attack
+                        print(f'Your HP: {player.player_health}')
+                        if player.player_health <= 0:
+                            print('You died')
+                            player.try_again()
+                        else:
+                            player_monster_choice = str(input('Would you like to attack(a) or run(r)? ').lower())
+                            while player_monster_choice not in ['attack', 'run', 'a', 'r']:
+                                player_monster_choice=str(input(f"'{player_monster_choice}' is not a valid option. Would you like to attack(a) or run(r)? ").lower())
             else:
                 print('You decided to run.')
         
@@ -215,5 +215,3 @@ def castle_descent():
     print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
     print("You found the exit!", quote = F)
     player.try_again()
-
-castle_descent()
