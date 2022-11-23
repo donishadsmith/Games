@@ -2,6 +2,7 @@
 import random, copy
 import numpy as np
 def castle_descent():
+    #Creating class to contain player information and logic for certain encounters, the player movement, and trying again.
     class castle_descent_player_information:
         
         def __init__(self, player, player_health, player_coordinate, encountered_object, movement_coordinate, attack_power,
@@ -15,6 +16,7 @@ def castle_descent():
             self.floor = floor
             self.attack_power = attack_power
             self.free_space = free_space
+        
         
         def try_again(self):
             player_retry = str(input('Want to play again? Yes (y) or No (n)? ').lower())
@@ -107,7 +109,9 @@ def castle_descent():
                 self.player_coordinate = np.where(game_board==u'\U0001F93A')
                 print(np.array2string(game_board[player.floor], separator='   ', formatter={'str_kind': lambda x: x}))
   
-    ###Create Castle   
+    ###Randomly generated castle
+    
+    
     castle_area = random.sample([num for num in range(8,16, 2)],1)[0]
     castle = np.array(np.zeros([3, castle_area, castle_area]),  dtype='<U1')
     castle[np.where(castle=='0')] = '\u2800'
@@ -126,7 +130,8 @@ def castle_descent():
         monster_proportion = inner_bounds/4
         free_space = np.where(floor=='\u2800')[0][::(inner_bounds)]
     
-        #Creating an equally spaced array with different unicode
+        #Creating an array that has the same number of objects in each row. Having different number of objects causes the array to look kind of wonky
+        #This wonkiness will be present throughout the game but not in the beginning at least
         for row_begin in free_space:
             row_end = row_begin + inner_bounds
             floor[random.sample([x for x in range(row_begin,row_end)],int(monster_proportion))] = u'\U0001f479'
