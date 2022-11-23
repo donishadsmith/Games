@@ -166,7 +166,7 @@ castle_descent = function(){
       }
       if(player_monster_choice == "attack" || player_monster_choice == "a"){
         print("You decided to attack",quote = F)
-        while(!(player_monster_choice == "run" || player_monster_choice == "r" || player_information$player_health <=0 ||
+        while(!(player_monster_choice == "run" || player_monster_choice == "r" || 
                 numerical_board[player_information$movement_coordinate] <= 0)){
           print(noquote(game_board[,,player_information$floor]))
           player_information$attack_power = sample( player_information$player_attack_range,1)
