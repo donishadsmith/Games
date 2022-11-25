@@ -4,6 +4,8 @@
 #It seems that arrays and dataframes cannot be updated globally within function. SO any changes to the array must be done in the outermost function
 #Thus, I had to work around creating functions for certain tasks
 
+#This version can be played in RStudio and the terminal. It runs on base R packages
+
 castle_descent = function(){
   moves = c("w", "s", "d","a",
             "r", "run", "attack", "y", "yes", "n", "no")
