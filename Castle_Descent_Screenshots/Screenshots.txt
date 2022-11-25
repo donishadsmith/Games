@@ -1,0 +1,1 @@
+This folder contains screenshots from the p\Python and R versions of Castle Descent.
