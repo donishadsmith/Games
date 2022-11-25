@@ -1,1 +1,11 @@
 Objective is to descent the castle. Can be played in R and Python.
+
+There are 3 versions of teh R script:
+One allows you to play the game using base R packages only
+The user needs to press enter for the keyboard input to be accepted
+
+Another requires you to download keypress, which only works in the Terminal or Command Line
+Keypress allows you to press a key and have taht key accepted as a variable without the user needing to press the enter key
+
+Another version is for RStudio. In that script RStudio's API is used to constantly monitor the R console for user keyboard inputs
+User inputs are accepted witout the use needing to press enter
