@@ -3,15 +3,15 @@ guess_the_word = function() {
   #All functions belong to base R
   dictionary = data.frame(easy = c("jam", "ace", "odd", "low", "the", "get", "lit", "fin", "guy", "bud"), intermediate = c("earth", "abode", "beach", "music","jumbo",
                                                                                                                            "field", "fried","quick", "drama", "slash"), hard = c("calvalry",
-                                                                                                                               "iceberg",
-                                                                                                                               "habitat",
-                                                                                                                               "ukelele",
-                                                                                                                               "fervent",
-                                                                                                                               "gravity",
-                                                                                                                               "ketchup",
-                                                                                                                               "invoice",
-                                                                                                                               "manhunt",
-                                                                                                                               "progeny"))
+                                                                                                                                                                                 "iceberg",
+                                                                                                                                                                                 "habitat",
+                                                                                                                                                                                 "ukelele",
+                                                                                                                                                                                 "fervent",
+                                                                                                                                                                                 "gravity",
+                                                                                                                                                                                 "ketchup",
+                                                                                                                                                                                 "invoice",
+                                                                                                                                                                                 "manhunt",
+                                                                                                                                                                                 "progeny"))
   valid_options = list("e" = "easy", "i" = "intermediate", "h"= "hard","r" ="random level" , "y" = "yes",  "n" = "no", "full_options" = c("easy", "intermediate", "hard", "random level", "yes", "no"))
   input = noquote(readline("Select difficulty: 'easy(e) ', 'intermediate(i)', 'hard(h)', or 'random level(r)'? "))
   input = tolower(as.character(input))
@@ -51,13 +51,13 @@ guess_the_word = function() {
     if(choice %in% valid_options[["full_options"]][5:6]){
       if(choice == "yes"){
         guess_the_word()
-        }
+      }
       else if(choice == "no"){
         print(noquote("Thanks for playing! Type 'guess_the_word()' with no quotations in the terminal if you want to play again."))
         stop(call. = F)
-        }
       }
     }
+  }
   game = function(input)
   {
     if(input == "random level"){
@@ -78,7 +78,7 @@ guess_the_word = function() {
       guess_input = noquote(readline(paste("Input a single letter, multiple letters, or guess the word. You have", attempts,"attempts to guess the correct word. ")))
       guess_input = unique(unlist(strsplit(tolower(as.character(guess_input)), NULL)))
       turn_loss = 0
-      if(length(which(guess_input %in% split_word) > 0)){
+      if(length(which(guess_input %in% split_word) >= 1)){
         for(letter in which(guess_input %in% split_word)){
           letter = guess_input[letter]
           tracked_correct_letters[which(split_word == letter)] = letter
@@ -90,7 +90,7 @@ guess_the_word = function() {
             print(noquote(paste(letter, "is in the word.")))
             used_letters = cbind(used_letters, letter)
             turn_loss = turn_loss + 1
-            }
+          }
         }
         for(letter in which(!(guess_input %in% split_word))){
           letter = guess_input[letter]
@@ -105,7 +105,7 @@ guess_the_word = function() {
           }
         }
       }
-      else if(!(guess_input %in% split_word)){
+      else if(!(length(guess_input %in% split_word) >= 1)){
         for(letter in which(!(guess_input %in% split_word))){
           letter = guess_input[letter]
           if(letter %in% used_letters){
@@ -131,10 +131,10 @@ guess_the_word = function() {
         print(noquote(paste("You have", attempts, "attempt left.")))
       }
       if(length(used_letters) == 1){
-      print(noquote(paste("Letter used:",list(used_letters))))
+        print(noquote(paste("Letter used:",list(used_letters))))
       }
       else{
-      print(noquote(paste("Letters used:",list(used_letters))))
+        print(noquote(paste("Letters used:",list(used_letters))))
       }
       print(noquote(paste("There are", sum(tracked_correct_letters == "_"), "letters left to guess.")))
       print(noquote(tracked_correct_letters))
@@ -147,8 +147,3 @@ guess_the_word = function() {
 }
 
 guess_the_word()
-
-
-
-
-
