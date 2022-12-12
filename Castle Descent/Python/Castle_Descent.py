@@ -44,7 +44,7 @@ def castle_descent():
                 game_board[self.movement_coordinate] = copy.deepcopy(castle[self.movement_coordinate])
                 print(np.array2string(game_board[self.floor], separator='   ', formatter={'str_kind': lambda x: x}))
                 print('You encountered a fairy! Your health increases by 10 HP.')
-                self.player_health = self.player_health + 10
+                self.player_health += 10
                 print(f'New HP: {self.player_health}')
                 numerical_board[self.movement_coordinate] = 0
                 game_board[self.movement_coordinate] = '\u2800'
