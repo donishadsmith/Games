@@ -1,229 +1,274 @@
 #Objective is to get to the bottom of the castle and find the exit
-#Python version in development
-#Still need to clean up R code and add more comments
-#It seems that arrays and dataframes cannot be updated globally within function. SO any changes to the array must be done in the outermost function
-#Thus, I had to work around creating functions for certain tasks
-
 #This version can be played in RStudio and the terminal. It runs on base R packages
 
-castle_descent = function(){
-  moves = c("w", "s", "d","a",
-            "r", "run", "attack", "y", "yes", "n", "no")
-  castle_descent_player_information =  setRefClass("castle_info", fields = list(player_health="numeric", player_coordinate="matrix",
-                                             encountered_object="character",
-                                             movement_coordinate = "matrix",
-                                             player_attack_range="numeric", 
-                                             attack_power = "numeric",
-                                             floor = "numeric"
-                                              ))
+#Function for player movement
+
+#Function for fairy event
+fairy_event = function(castle_data,player){
+  cat('You encountered a fairy!\nYour HP increased by 2 points.')
+  '\U1F9DE'
+  castle_data$castle[player$movement_coordinate] = player$encountered_object
+  print(castle_data$castle[,,player$floor], quote = F)
+  player$player_health = player$player_health + 10
+  print(paste('New HP:',player$player_health), quote = F)
+  Sys.sleep(2)
+  #Clear object from castle and dataframe
+  castle_data$castle[player$movement_coordinate] = '\u2800'
+  castle_data$dataframe = castle_data$dataframe[-c(player$castle_dataframe_row),]
+  fairy_event_output = c(castle_data,player)
+  return(fairy_event_output)
   
-  try_again = function(){
-    player_retry = tolower(as.character(readline("Want to play again? Yes (y) or No (n): ")))
-    while(!(player_retry %in% moves[8:11])){
-      player_retry = tolower(as.character(readline(paste(paste0("'",player_retry,"'")," Is not a valid option. Please input yes (y) or no (n): "))))
+}
+#Function for genie event
+genie_event = function(castle_data,player){
+  cat('You encountered a genie!\nYour attack range increased by 2 points.', quote = F)
+  castle_data$castle[player$movement_coordinate] = player$encountered_object
+  print(castle_data$castle[,,player$floor], quote = F)
+  player$player_attack_range = player$player_attack_range + 2
+  print(paste('New attack range: ', paste0(min(player$player_attack_range),':',max(player$player_attack_range))), quote = F)
+  Sys.sleep(2)
+  #Clear object from castle and dataframe
+  castle_data$castle[player$movement_coordinate] = '\u2800'
+  castle_data$dataframe = castle_data$dataframe[-c(player$castle_dataframe_row),]
+  genie_event_output = c(castle_data,player)
+  return(genie_event_output)
+  
+}
+#Function for monster event
+monster_event = function(castle_data,player){
+  castle_data$castle[player$movement_coordinate] = player$encountered_object
+  print('You encountered a monster!', quote = F)
+  print(castle_data$castle[,,player$floor], quote = F)
+  print(paste('Your HP: ',player$player_health), quote = F)
+  print(paste('Your attack range: ', paste0(min(player$player_attack_range),':',max(player$player_attack_range))), quote = F)
+  monster_hp = castle_data$dataframe[player$castle_dataframe_row,5]
+  print(paste('Monster HP: ', monster_hp),quote = F)
+  
+  player_action = 'a'
+  
+  while(!(player_action %in% c('r','run') | monster_hp <= 0)){
+    print('Would you like to attack(a) or run(r)? ', quote = F)
+    player_action = tolower(noquote(readline('Would you like to attack(a) or run(r)? ')))   
+    while(!(player_action %in% c('r','run','attack','a'))){
+      player_action = tolower(noquote(readline('Would you like to attack(a) or run(r)? ')))   
     }
-    if(player_retry=="yes"|| player_retry=="y"){
-      castle_descent()
-    }
-   else{
-      print("Thank you for playing Castle Descent!", quote = F)
+    if(player_action == 'attack' | player_action == 'a'){
+      print(castle_data$castle[,,player$floor], quote = F)
+      print('You decided to attack',quote = F)
+      player$attack_power = sample( player$player_attack_range,1)
+      print(paste('You dealt',player$attack_power, 'points of damage'),quote = F)
+      
+      if(monster_hp - player$attack_power <= 0){
+        monster_hp = 0
+        print('The monster fainted. You won!',quote = F)
+        #Clear object from castle and dataframe
+        castle_data$castle[player$movement_coordinate] = '\u2800'
+        castle_data$dataframe = castle_data$dataframe[-c(player$castle_dataframe_row),]
+      }
+      else{
+        monster_hp =  monster_hp - player$attack_power
+        print(paste('Monster HP: ', monster_hp), quote = F)
+        monster_attack = sample(1:5,1)
+        
+        if(player$player_health - monster_attack <= 0){
+          print(paste('Monster dealt',monster_attack, 'points of damage'),quote = F)
+          print(paste('Your HP: ',player$player_health), quote = F)
+          print('You died.', quote = F)
+        }
+        else{
+          player$player_health = player$player_health - monster_attack
+          print(paste('Monster dealt', monster_attack, 'points of damage'),quote = F)
+          print(paste('Your HP: ', player$player_health), quote = F)
+                  }
+      }
     }
   }
-  #######################################Setup Game########################################
-  #Spawn castle
-  #Castle will have a randomly selected row and column length from 8 to 10.
-  # Area of the castle floor will equal castle_row * castle_col
-  castle_row = 1:sample(8:10, 1)
-  castle_col = 1:sample(8:10, 1)
-  #Numerical board will contain numerical information regarding monster health and 
-  #binary information indicating if a fairy/genie has been used or not
-  numerical_board = castle = array( '\u2800',dim = c(length(castle_row),length(castle_col),3))
+  if(isTRUE(player_action %in% c('r','run')) == T){
+    print('You decided to run.')
+  }
+  monster_event_output = c(castle_data,player)
+  return(monster_event_output)
+  
+}
+
+move_to_next_floor_event = function(castle_data,player){
+  print('You found the stars!', quote = F)
+  print(castle_data$castle, quote = F)
+  print(paste('You can now advance to floor', player$floor + 1,'!'), quote = F)
+  player$floor = player$floor + 1
+  player$movement_coordinate[3] = player$floor
+  player$player_coordinate = player$movement_coordinate
+  castle_data$castle[player$movement_coordinate] = '\U1F93A'
+  move_to_next_floor_event_output = c(castle_data,player)
+  return(move_to_next_floor_event_output)
+}
+
+#Function to create castle and castle dataframe containing information about castle
+
+castle_create = function(){
+  #Dataframe to contain information of gamestate
+  castle_dataframe = data.frame('x' = NA, 'y' = NA, 'z' = NA, 'object' = NA,
+                                'hp_usage' = NA)
+  # Area of the castle floor will equal castle_width* castle_length
+  castle_x_length = sample(8:13, 1)
+  castle_y_length = sample(8:13, 1)
+  castle_z_length = sample(3:6, 1)
+  
+  castle = array( '\u2800',dim = c(castle_x_length,castle_y_length,castle_z_length))
   #Spawn walls;These walls be used to ensure players don't go out of bounds in the array - basically boundary detection
-  castle[1:nrow(castle),c(1,ncol(castle)),] ="\U2591"
-  castle[c(1,nrow(castle)),1:ncol(castle),]="\U2591"
+  castle[1:nrow(castle),c(1,ncol(castle)),] ='\U2591'
+  castle[c(1,nrow(castle)),1:ncol(castle),]='\U2591'
   #One is the top of the castle; this is where the player spawns
-  castle[,,1][sample(which(castle[,,1]=='\u2800'),1)] = "\U1F93A"
+  castle[,,1][sample(which(castle[,,1]=='\u2800'),1)] = '\U1F93A'
   #Three is the bottom of the castle; this is where the exit spawns
-  castle[,,3][sample(which(castle[,,3]=='\u2800'),1)] = "\U2395"
+  castle[,,castle_z_length][sample(which(castle[,,castle_z_length]=='\u2800'),1)] = '\U2395'
+  
+  castle_dataframe[,1:4] = data.frame(which(castle=='\U2395', arr.ind = T), '\U2395')
+  
   #Spawn stairs
-  castle[,,1][sample(which(castle[,,1]=='\u2800'),1)] = "S"
-  castle[,,2][sample(which(castle[,,1]=='\u2800'),1)] = "S"
-  noquote(castle)
-  #Proportion of the empty spaces that will be monsters, genies, or fairies
+  for(grid in 1:(castle_z_length-1)){
+    castle[,,grid][sample(which(castle[,,grid]=='\u2800'),1)] = 'S'
+  }
+  castle_dataframe[2:(castle_dataframe_rows <- nrow(castle_dataframe) + nrow(which(castle=='S', arr.ind = T))),1:4] = data.frame(which(castle=='S', arr.ind = T), 
+                                                                                                                                 rep('S',nrow(which(castle=='S', arr.ind = T)) ))
   #Proportion of the empty spaces that will be monsters, genies, or fairies
   monster_proportion = round(length(which(castle == '\u2800'))*0.15,0)
   fairy_proportion = round(length(which(castle == '\u2800'))*0.025,0)
   genie_proportion = round(length(which(castle == '\u2800'))*0.025,0)
-  #Monster spawn; randomly throughout the castle
-  castle[,,1:3][sample(which(castle == '\u2800'),monster_proportion)] = "\U1F479"
-  #Fairy spawn
-  castle[,,1:3][sample(which(castle == '\u2800'),fairy_proportion)] = "\U1F9DA"
-  #Genie spawn
-  castle[,,1:3][sample(which(castle == '\u2800'),genie_proportion)] = "\U1F9DE"
-  #Game Board that player will see, here monsters, fairy genies, and stairs are hidden with
-  #the door unicode
-  game_board = castle
-  #Everything that is not an empty space, castle wall, 
-  game_board[which(!(game_board %in% c('\u2800',"\U2591","\U1F93A")))] = "\U1F6AA"
-  noquote(game_board)
-  noquote(castle)
-  #Adding information about monster health and fairies to the board 
-  #Ones for fairies and genies indicate that the fairy/genie has not been used yet
-  numerical_board[which(castle %in% c("\U1F9DE","\U1F9DA"))] = 1
-  # Preventing error about length
   
-  numerical_board[,,1][which(castle[,,1]=="\U1F479")] = sample(c(5:10),length(which(castle[,,1]=="\U1F479")), 
-                                                               replace = T)
-  numerical_board[,,2][which(castle[,,2]=="\U1F479")] = sample(c(10:15),length(which(castle[,,2]=="\U1F479")), 
-                                                               replace = T)
-  numerical_board[,,3][which(castle[,,3]=="\U1F479")] = sample(c(15:20),length(which(castle[,,3]=="\U1F479")),
-                          replace = T)
-  player_information = castle_descent_player_information(player_coordinate = which(castle=="\U1F93A", arr.ind = T),
-                                               player_health = 100,
-                                               player_attack_range=5:10,
-                                               floor = 1,
-                                               encountered_object = "S"
-                                               
-                                              )
+  #Spawning objects randomly through castle and storing information in dataframe
+  castle[,,1:castle_z_length][sample(which(castle == '\u2800'),monster_proportion)] = '\U1F479'
+  castle_dataframe[(nrow(castle_dataframe) + 1):(nrow(castle_dataframe) + nrow(which(castle == '\U1F479', arr.ind = T))),] = NA
+  castle_dataframe[(castle_dataframe_rows + 1):(castle_dataframe_rows <- nrow(castle_dataframe)),1:5] = data.frame(which(castle == '\U1F479', arr.ind = T), rep('\U1F479', nrow(which(castle =='\U1F479', arr.ind = T))),sample(c(10,20,30,40),nrow(which(castle =='\U1F479', arr.ind = T)),replace = T))
+  
+  castle[,,1:castle_z_length][sample(which(castle == '\u2800'),fairy_proportion)] = '\U1F9DA'
+  castle_dataframe[nrow(castle_dataframe) + nrow(which(castle == '\U1F9DA', arr.ind = T)),] = NA
+  castle_dataframe[(castle_dataframe_rows + 1):(castle_dataframe_rows <- nrow(castle_dataframe)),1:5] = data.frame(which(castle == '\U1F9DA', arr.ind = T), rep('\U1F9DA', nrow(which(castle =='\U1F9DA', arr.ind = T))), rep(1, nrow(which(castle =='\U1F9DA', arr.ind = T))))
+  
+  castle[,,1:castle_z_length][sample(which(castle == '\u2800'),genie_proportion)] = '\U1F9DE'
+  castle_dataframe[nrow(castle_dataframe) + nrow(which(castle == '\U1F9DE', arr.ind = T)),] = NA
+  castle_dataframe[(castle_dataframe_rows + 1):(castle_dataframe_rows <- nrow(castle_dataframe)),1:5] = data.frame(which(castle == '\U1F9DE', arr.ind = T), rep('\U1F9DE', nrow(which(castle =='\U1F9DE', arr.ind = T))), rep(1, nrow(which(castle =='\U1F9DE', arr.ind = T))))
 
+  #Spawning doors at coordinates that are objects
+  for(coordinate in 1:nrow(castle_dataframe)){
+    x = unlist(castle_dataframe[coordinate,1:3])
+    castle[x[1],x[2],x[3]] = '\U1F6AA'
+  }
+  
+  castle_and_dataframe = list('castle' = castle, 'dataframe' = castle_dataframe)
+  return(castle_and_dataframe)
+}
+
+
+castle_descent_player =  setRefClass('castle_info', fields = list(player_health='numeric', player_coordinate='matrix',
+                                                                  encountered_object='character',
+                                                                  movement_coordinate = 'matrix',
+                                                                  player_attack_range='numeric', 
+                                                                  attack_power = 'numeric',
+                                                                  floor = 'numeric',
+                                                                  castle_dataframe_row = 'numeric'
+))
+
+.iteration <<- 0
+
+castle_descent = function(class){
+  
+  movement_dict = list('w' = c(-1,0,0), 'a' = c(0,-1,0), 's' = c(1,0,0),  'd' = c(0,1,0))
+  
+  castle_data = castle_create()
+  
+  player = class(player_coordinate = which(castle_data$castle=='\U1F93A', arr.ind = T),
+                 player_health = 100,
+                 player_attack_range=5:10,
+                 floor = 1,
+                 encountered_object = '\u2800'
+                 
+  )
   #######################################Setup Complete########################################
-  print("Welcome to Castle Descent!")
-  print(noquote(game_board))
-  print("You will be starting at the top of the castle!")
-  while(!(isTRUE(player_information$encountered_object=="\U2395")==T)){    
-    if(player_information$encountered_object=="S"){
-      temp_board = game_board[,,player_information$floor]
-      temp_movement_coordinate = player_information$movement_coordinate[-c(3)]
-      temp_board[temp_movement_coordinate[1],temp_movement_coordinate[2]] = "\U1F93A"
-      print(temp_board, quote = F)
+  if(.iteration == 0){
+    print('Welcome to Castle Descent!', quote = F)
+    print('You will be starting at the top of the castle!', quote = F)
+    Sys.sleep(2)
+  }
+  else{
+    print('New game.', quote = F)
+    Sys.sleep(1)
+  }
+  
+  print(castle_data$castle, quote = F)
+  
+  while(!(player$encountered_object=='\U2395' | player$player_health <= 0)){    
+    
+    cat(rep("\n", 50))
+    print(castle_data$castle[,,player$floor], quote = F)
+    
+    print('w (up), a (left), s (down), d (right): ', quote = F)
+    player_action = tolower(noquote(readline('w (up), a (left), s (down), d (right): ')))
+    while(!(player_action %in% c('w','a','s','d'))){
+      player_action = tolower(noquote(readline('w (up), a (left), s (down), d (right): ')))
     }
-    else{
-    print(noquote(game_board[,,player_information$floor]))
-    }
-    player_input = tolower(as.character(readline("w (up), a (left), s (down), d (right): ")))
-    while(!(player_input %in% moves[1:4])){
-      player_input = tolower(as.character(readline(paste(paste0("'",player_input,"'"), "Is not a valid input. Please input: w (up), a (left), s (down), or, d (right): "))))
-    }
-    #Controller
-    if(player_input == "w"){
-      player_information$movement_coordinate = player_information$player_coordinate
-      player_information$movement_coordinate[1] = player_information$movement_coordinate[1] - 1  
-      }
-    else if(player_input == "s"){
-      player_information$movement_coordinate = player_information$player_coordinate
-      player_information$movement_coordinate[1] = player_information$movement_coordinate[1] + 1
-    }
-    else if(player_input == "a"){
-      player_information$movement_coordinate = player_information$player_coordinate
-      player_information$movement_coordinate[2] = player_information$movement_coordinate[2] - 1
-    } 
-    else if(player_input == "d"){
-      player_information$movement_coordinate = player_information$player_coordinate
-      player_information$movement_coordinate[2] = player_information$movement_coordinate[2] + 1
-    } 
-    #See which object is in the coordinate
-    player_information$encountered_object = castle[player_information$movement_coordinate]  
-    #Object commands
-    if(player_information$encountered_object=='\u2800' || player_information$encountered_object=="\U1F93A"){
+    
+    player$movement_coordinate = player$player_coordinate + movement_dict[[player_action]]
+    if(castle_data$castle[player$movement_coordinate] == '\u2800'){
       # Add emoji to new coordinate is the object is empty
-      game_board[player_information$movement_coordinate] = "\U1F93A"
+      castle_data$castle[player$player_coordinate] = '\u2800'
       #Make previous player coordinate empty
-      game_board[player_information$player_coordinate] = '\u2800'
+      player$player_coordinate = player$movement_coordinate
       #Movement coordinate now the new player coordinate
-      player_information$player_coordinate = player_information$movement_coordinate
+      castle_data$castle[player$player_coordinate] = '\U1F93A'
     }
-    else if(player_information$encountered_object=="\U1F9DA"){
-      game_board[player_information$movement_coordinate] = castle[player_information$movement_coordinate]
-      print(noquote(game_board[,,player_information$floor]))
-      print("You encountered a fairy! Your health increases by 10 HP.", quote = F)
-      player_information$player_health = player_information$player_health + 10
-      print(paste("New HP:",player_information$player_health), quote = F)
-      numerical_board[player_information$movement_coordinate] = 0
-      game_board[which(numerical_board==0)] = castle[which(numerical_board==0)] = '\u2800'
-      #This code fixes an issue with the player temporarily being replaced with a string before inputting the next move
-      game_board[player_information$player_coordinate]="\U1F93A"
-    }
-    else if(player_information$encountered_object=="\U1F9DE"){
-      game_board[player_information$movement_coordinate] = castle[player_information$movement_coordinate]
-      print(noquote(game_board[,,player_information$floor]))
-      print("You encountered a genie!", qoute = F)
-      print("Your attack range increased by 2 points.", qoute = F)
-      player_information$player_attack_range = player_information$player_attack_range + 2
-      print(paste("New attack range: ", paste0(min(player_information$player_attack_range),":",max(player_information$player_attack_range))), quote = F)
-      numerical_board[player_information$movement_coordinate] = 0
-      game_board[which(numerical_board==0)] = '\u2800'
-      castle[which(numerical_board==0)] = '\u2800'
-      game_board[player_information$player_coordinate]="\U1F93A"
-      }
-    else if(player_information$encountered_object=="\U1F479"){
-      game_board[player_information$movement_coordinate] = castle[player_information$movement_coordinate]
-      print(noquote(game_board[,,player_information$floor]))
-      print("You encountered a monster!", qoute = F)
-      print(paste("Your HP: ",player_information$player_health), quote = F)
-      print(paste("Your attack range: ", paste0(min(player_information$player_attack_range),":",max(player_information$player_attack_range))), quote = F)
-      print(paste("Monster HP: ", numerical_board[player_information$movement_coordinate]),quote = F)
-      player_monster_choice = tolower(as.character(readline("Would you like to attack(a) or run(r)? ")))
-      while(!(player_monster_choice %in% moves[c(4:7)])){
-        player_monster_choice  = tolower(as.character(readline(paste(paste0("'",player_monster_choice ,"'"),"is not a valid choice. Would you like to attack(a) or run(r)?"))))
-      }
-      if(player_monster_choice == "attack" || player_monster_choice == "a"){
-        print("You decided to attack",quote = F)
-        while(!(player_monster_choice == "run" || player_monster_choice == "r" || 
-                numerical_board[player_information$movement_coordinate] <= 0)){
-          print(noquote(game_board[,,player_information$floor]))
-          player_information$attack_power = sample( player_information$player_attack_range,1)
-          print(paste("You dealt",player_information$attack_power, "points of damage"),quote = F)
-          if(as.numeric(numerical_board[player_information$movement_coordinate]) - player_information$attack_power <= 0){
-            numerical_board[player_information$movement_coordinate] = 0
-            print("The monster fainted. You won!",quote = F)
-            game_board[which(numerical_board==0)] = '\u2800'
-            castle[which(numerical_board==0)] = '\u2800'
-            game_board[player_information$player_coordinate]="\U1F93A"
-          }
-          else{
-            numerical_board[player_information$movement_coordinate] =  as.numeric(numerical_board[player_information$movement_coordinate]) - player_information$attack_power
-            print(paste("Monster HP: ", numerical_board[player_information$movement_coordinate]),quote = F)
-            monster_attack = sample(1:5,1)
-            if(player_information$player_health - monster_attack <= 0){
-              print(paste("Monster dealt",monster_attack, "points of damage"),quote = F)
-              print(paste("Your HP: ",player_information$player_health), quote = F)
-              print("You died.", quote = F)
-              try_again()
-            }
-            else{
-              player_information$player_health = player_information$player_health - monster_attack
-              print(paste("Monster dealt",monster_attack, "points of damage"),quote = F)
-              print(paste("Your HP: ",player_information$player_health), quote = F)
-              player_monster_choice = tolower(as.character(readline("Would you like to attack(a) or run(r)? ")))
-              while(!(player_monster_choice %in% moves[c(4:7)])){
-                player_monster_choice  = tolower(as.character(readline(paste(paste0("'",player_monster_choice ,"'"),"is not a valid choice. Would you like increased attack(a) or defense(d)? "))))
-              }
-            }
-          }
-        }
-      }
-      else{
-        print("You decided to run.")
-      }
-    }
-    else if(player_information$encountered_object=="S"){
-      print(paste("You found the stars! You can now advance to floor", player_information$floor + 1,"!"), quote = F)
-      player_information$floor = player_information$floor + 1
-      player_information$movement_coordinate[3] = player_information$floor
-      player_information$player_coordinate = player_information$movement_coordinate
+    else if(castle_data$castle[player$movement_coordinate] %in% c('\U1F6AA','\U1F479')){
+      #Look into dataframe to see what encountered object is supposed to be
+      player$castle_dataframe_row = which(castle_data$dataframe$x == player$movement_coordinate[1] & castle_data$dataframe$y == player$movement_coordinate[2] & castle_data$dataframe$z == player$movement_coordinate[3])
+      
+      player$encountered_object = castle_data$dataframe[player$castle_dataframe_row,4]
+      
+      #Switch statement for events
+      switch(player$encountered_object,
+             '\U1F9DA'= {event_output = fairy_event(castle_data = castle_data, player = player)},
+             '\U1F9DE'= {event_output = genie_event(castle_data = castle_data, player = player)},
+             '\U1F479'={event_output = monster_event(castle_data = castle_data, player = player)}
+             )
+      castle_data = event_output[1:2]
+      player = event_output[[3]]
     }
   }
-  game_board[player_information$movement_coordinate] = castle[player_information$movement_coordinate]
-  print(game_board[,,player_information$floor], quote = F)
-  print("You found the exit!", quote = F)
-  try_again()
+  if(player$player_health <= 0){
+    print('Want to play again? Yes (y) or No (n): ', quote = F)
+    player_retry = tolower(keypress(block = T))                       
+    while(!(player_retry %in% c('yes','y','no','n'))){
+      player_retry = tolower(keypress(block = T))  
+    }
+    if(player_retry=='yes'| player_retry=='y'){
+      castle_descent()
+    }
+    else{
+      print('Thank you for playing Castle Descent!', quote = F)
+    }
+  }
+  else{
+    print('You found the exit!', quote = F)
+    castle_data['castle']$castle[player$movement_coordinate] = player$encountered_object
+    print(castle_data[['castle']][,,player$floor], quote = F)
+    player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): ')))                     
+    while(!(player_retry %in% c('yes','y','no','n'))){
+      player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): '))) 
+    }
+    if(player_retry=='yes'| player_retry=='y'){
+      castle_descent(class = castle_descent_player)
+    }
+    else{
+      print('Thank you for playing Castle Descent!', quote = F)
+    }
+  }
 }
-castle_descent()
+
+castle_descent(class = castle_descent_player)
 
 
 
 
-  
+
 
 
   
