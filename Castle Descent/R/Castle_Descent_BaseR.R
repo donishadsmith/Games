@@ -1,5 +1,6 @@
 #Objective is to get to the bottom of the castle and find the exit
 #This version can be played in RStudio and the terminal. It runs on base R packages
+#Functional; still a work in progress
 
 #Function for player movement
 
