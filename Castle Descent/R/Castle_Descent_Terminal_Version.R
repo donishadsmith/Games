@@ -1,4 +1,5 @@
 #Objective is to get to the bottom of the castle and find the exit
+#Functional; still a work in progress
 #Keypress works in the commandline/terminal. It allows you to input a key without having to  press enter
 library(keypress)  
 #Function for player movement
