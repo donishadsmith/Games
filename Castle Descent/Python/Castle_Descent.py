@@ -1,3 +1,4 @@
+#Will revamp code
 ##Python version of Castle Descent. Need to clean up code and add comments for both oythin and R version
 import random, copy
 import numpy as np
