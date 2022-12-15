@@ -96,10 +96,11 @@ move_to_next_floor_event = function(castle_data,player){
   print('You found the stars!', quote = F)
   print(castle_data$castle, quote = F)
   print(paste('You can now advance to floor', player$floor + 1,'!'), quote = F)
+  Sys.sleep(2)
   player$floor = player$floor + 1
   player$movement_coordinate[3] = player$floor
   player$player_coordinate = player$movement_coordinate
-  castle_data$castle[player$movement_coordinate] = '\U1F93A'
+  castle_data$castle[player$player_coordinate] = '\U1F93A'
   move_to_next_floor_event_output = c(castle_data,player)
   return(move_to_next_floor_event_output)
 }
