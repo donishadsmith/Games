@@ -239,12 +239,13 @@ castle_descent = function(class){
   }
   if(player$player_health <= 0){
     print('Want to play again? Yes (y) or No (n): ', quote = F)
-    player_retry = tolower(keypress(block = T))                       
+    player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): ')))                     
     while(!(player_retry %in% c('yes','y','no','n'))){
-      player_retry = tolower(keypress(block = T))  
+      player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): '))) 
     }
     if(player_retry=='yes'| player_retry=='y'){
-      castle_descent()
+      .iteration <<- .iteration + 1
+      castle_descent(class = castle_descent_player)
     }
     else{
       print('Thank you for playing Castle Descent!', quote = F)
@@ -252,14 +253,14 @@ castle_descent = function(class){
   }
   else{
     print('You found the exit!', quote = F)
-    castle_data['castle']$castle[player$movement_coordinate] = player$encountered_object
-    print(castle_data[['castle']][,,player$floor], quote = F)
+    castle_data$castle[player$movement_coordinate] = player$encountered_object
+    print(castle_data$castle[,,player$floor], quote = F)
     player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): ')))                     
     while(!(player_retry %in% c('yes','y','no','n'))){
       player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): '))) 
     }
     if(player_retry=='yes'| player_retry=='y'){
-      .iteration = .iteration + 1
+      .iteration <<- .iteration + 1
       castle_descent(class = castle_descent_player)
     }
     else{
