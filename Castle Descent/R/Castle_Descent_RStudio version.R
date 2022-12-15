@@ -63,7 +63,8 @@ fairy_event = function(castle_data,player){
   #Clear object from castle and dataframe
   castle_data$castle[player$movement_coordinate] = '\u2800'
   castle_data$dataframe = castle_data$dataframe[-c(player$castle_dataframe_row),]
-  return(castle_data)
+  fairy_event_output = c(castle_data,player)
+  return(fairy_event_output)
 }
 #Function for genie event
 genie_event = function(castle_data,player){
@@ -76,7 +77,8 @@ genie_event = function(castle_data,player){
   #Clear object from castle and dataframe
   castle_data$castle[player$movement_coordinate] = '\u2800'
   castle_data$dataframe = castle_data$dataframe[-c(player$castle_dataframe_row),]
-  return(castle_data)
+  genie_event_output = c(castle_data,player)
+  return(genie_event_output)
 }
 #Function for monster event
 monster_event = function(castle_data,player){
