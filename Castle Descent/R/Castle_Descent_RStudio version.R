@@ -211,7 +211,7 @@ castle_descent_player =  setRefClass('castle_info', fields = list(player_health=
                                                                   floor = 'numeric',
                                                                   castle_dataframe_row = 'numeric'
 ))
-
+#Dot hides variable from global environment
 .iteration <<- 0
 
 castle_descent = function(class){
