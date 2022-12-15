@@ -169,7 +169,6 @@ castle_descent_player =  setRefClass('castle_info', fields = list(player_health=
                                                                   castle_dataframe_row = 'numeric'
 ))
 
-.iteration <<- 0
 
 castle_descent = function(class){
   
@@ -182,18 +181,10 @@ castle_descent = function(class){
                                                          player_attack_range=5:10,
                                                          floor = 1, encountered_object = '\u2800')
   #######################################Setup Complete########################################
-  if(.iteration == 0){
-    print('Welcome to Castle Descent!', quote = F)
+  print('Welcome to Castle Descent!', quote = F)
     print('You will be starting at the top of the castle!', quote = F)
     Sys.sleep(2)
-    }
-  else{
-    print('New game.', quote = F)
-    Sys.sleep(2)
-  }
-  
 
-  
   while(!(player$encountered_object=='\U2395' | player$player_health <= 0)){    
     
     cat(rep("\n", 50))
