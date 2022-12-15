@@ -268,7 +268,7 @@ castle_descent = function(class){
              'S'={event_output = move_to_next_floor_event(castle_data = castle_data, player = player)}
       )
       castle_data = event_output[1:2]
-      player <<- event_output[[3]]
+      player = event_output[[3]]
     }
   }
     if(player$player_health <= 0){
