@@ -170,6 +170,7 @@ castle_descent_player =  setRefClass('castle_info', fields = list(player_health=
                                                                   floor = 'numeric',
                                                                   castle_dataframe_row = 'numeric'
 ))
+#The dot hides variable from global environment
 
 .iteration <<- 0
 
