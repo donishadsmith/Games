@@ -260,11 +260,12 @@ castle_descent = function(class){
     
       player$encountered_object = castle_data$dataframe[player$castle_dataframe_row,4]
       
-      #Switch statement for events
+        #Switch statement for events
       switch(player$encountered_object,
              '\U1F9DA'= {event_output = fairy_event(castle_data = castle_data, player = player)},
              '\U1F9DE'= {event_output = genie_event(castle_data = castle_data, player = player)},
-             '\U1F479'={event_output = monster_event(castle_data = castle_data, player = player)}
+             '\U1F479'={event_output = monster_event(castle_data = castle_data, player = player)},
+             'S'={event_output = move_to_next_floor_event(castle_data = castle_data, player = player)}
       )
       castle_data = event_output[1:2]
       player <<- event_output[[3]]
