@@ -196,12 +196,13 @@ castle_descent = function(class){
     Sys.sleep(1)
   }
   
-  print(castle_data$castle, quote = F)
   
   while(!(player$encountered_object=='\U2395' | player$player_health <= 0)){    
     
     cat(rep("\n", 50))
+    print(paste('Floor',which(castle_data$castle=='\U1F93A', arr.ind = T)[3], 'of',length(castle_data$castle)/(nrow(castle_data$castle)*ncol(castle_data$castle))), quote = F)
     print(castle_data$castle[,,player$floor], quote = F)
+    
     
     print('w (up), a (left), s (down), d (right): ', quote = F)
     player_action = tolower(noquote(readline('w (up), a (left), s (down), d (right): ')))
