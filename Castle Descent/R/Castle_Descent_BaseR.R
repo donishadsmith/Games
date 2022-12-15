@@ -259,6 +259,7 @@ castle_descent = function(class){
       player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): '))) 
     }
     if(player_retry=='yes'| player_retry=='y'){
+      .iteration = .iteration + 1
       castle_descent(class = castle_descent_player)
     }
     else{
