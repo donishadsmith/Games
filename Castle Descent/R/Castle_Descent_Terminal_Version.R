@@ -164,7 +164,6 @@ castle_descent_player =  setRefClass('castle_info', fields = list(player_health=
                                                                   encountered_object='character',
                                                                   movement_coordinate = 'matrix',
                                                                   player_attack_range='numeric', 
-                                                                  attack_power = 'numeric',
                                                                   floor = 'numeric',
                                                                   castle_dataframe_row = 'numeric'
 ))
