@@ -48,7 +48,6 @@ monster_event = function(castle_data,player){
   player_action = 'a'
   
   while(!(player_action %in% c('r','run') | monster_hp <= 0)){
-    print('Would you like to attack(a) or run(r)? ', quote = F)
     player_action = tolower(noquote(readline('Would you like to attack(a) or run(r)? ')))   
     while(!(player_action %in% c('r','run','attack','a'))){
       player_action = tolower(noquote(readline('Would you like to attack(a) or run(r)? ')))   
@@ -205,8 +204,7 @@ castle_descent = function(class){
     print(paste('Floor',which(castle_data$castle=='\U1F93A', arr.ind = T)[3], 'of',length(castle_data$castle)/(nrow(castle_data$castle)*ncol(castle_data$castle))), quote = F)
     print(castle_data$castle[,,player$floor], quote = F)
     
-    
-    print('w (up), a (left), s (down), d (right): ', quote = F)
+
     player_action = tolower(noquote(readline('w (up), a (left), s (down), d (right): ')))
     while(!(player_action %in% c('w','a','s','d'))){
       player_action = tolower(noquote(readline('w (up), a (left), s (down), d (right): ')))
