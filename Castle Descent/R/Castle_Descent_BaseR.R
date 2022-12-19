@@ -237,7 +237,6 @@ castle_descent = function(class){
     }
   }
   if(player$player_health <= 0){
-    print('Want to play again? Yes (y) or No (n): ', quote = F)
     player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): ')))                     
     while(!(player_retry %in% c('yes','y','no','n'))){
       player_retry = tolower(noquote(readline('Want to play again? Yes (y) or No (n): '))) 
