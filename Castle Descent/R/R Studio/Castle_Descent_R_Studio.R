@@ -1,6 +1,9 @@
 #Objective is to get to the bottom of the castle and find the exit while avoiding the zombie
 #Can input wasd movement controls freely without having to press enter to advance the script
-
+source('~/R Studio/Castle_Create.R')
+source('~/R Studio/Events.R')
+source('~/R Studio/Classes.R')
+source('~/R Studio/API.R')
 #Variable used to determine if the player is greeted with the 
 #welcome screen or not
 .iteration <<- 0
